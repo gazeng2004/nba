@@ -1,0 +1,17 @@
+from nba_api.stats.endpoints import playercareerstats, commonplayerinfo
+
+# Nikola Jokić
+career = playercareerstats.PlayerCareerStats(player_id='1628415') 
+
+# pandas data frames (optional: pip install pandas)
+
+#career = stats.PlayerCareerStats(player_id = 1628415) 
+player_info = commonplayerinfo.CommonPlayerInfo(player_id = '1628415')
+
+cdf = career.get_data_frames()[0]
+pdf = player_info.get_data_frames()[0]
+
+print(career)
+print(player_info)
+print(cdf)
+print(pdf)
