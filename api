@@ -13,5 +13,7 @@ pdf = player_info.get_data_frames()[0]
 
 print(career)
 print(player_info)
-print(cdf)
+print("WORKING ",cdf.tail(1)["PLAYER_ID"])
+print(cdf.tail(1)["PLAYER_ID"] == 1628415)
+print(cdf.tail(1))
 print(pdf)

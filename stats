@@ -1,18 +1,37 @@
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import playercareerstats 
+import csv
+from pathlib import Path
 
 """
 PlayerCareerStats can produce a dataframe that list out the average of the currents 
 """
-active_player = players.get_active_players()
-for player in active_player:
-    try:
-        player_stats = playercareerstats.PlayerCareerStats(player_id=player['id'])
-        career_data = player_stats.get_data_frames()
+def writer():
+    active_player = players.get_active_players()
+    for player in active_player:
+        try:
+            player_stats = playercareerstats.PlayerCareerStats(player_id=player['id'])
+            career_data = player_stats.get_data_frames()
 
-        if career_data:
-            career_totals = career_data[0]  # Assuming the first DataFrame contains career totals
-            print(f"Stats for {player['full_name']}:\n", career_totals.tail(1))
-    except Exception as e:
-        print(f"Failed to fetch stats for {player['full_name']} ({player['id']}): {e}")
-    #print(player_stats.career_totals_regular_season)
+            if career_data:
+                career_totals = career_data[0].tail(1)  # Assuming the first DataFrame contains career totals
+                print(f"Stats for {player['full_name']}:\n", career_totals)
+        except Exception as e:
+            print(f"Failed to fetch stats for {player['full_name']} ({player['id']}): {e}")
+        #print(player_stats.career_totals_regular_season)
+
+def header():
+    with open('2024-2025nbaStats.csv', 'w', newline = '') as csvfile:
+        fieldnames = ['PLAYER_ID', 'AGE', "MIN", "AVG PTS", "AVG OREB", "AVG DREB", "AVG REB", "AST", "STL", "BLK", "TOV", "PF"]
+        writer = csv.writer(csvfile)
+        writer.writerows(fieldnames)
+
+def opening():
+    file = open('test.csv', "w")
+    file.write("Hello World")
+    file.close()
+
+if __name__ == '__main__':
+    print("Hello World!")
+    opening()
+    writer()
