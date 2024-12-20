@@ -18,6 +18,7 @@ FTA: free throw attempt
 FT_PCT: FTM / FTA
 
 """
+
 def writer():
     active_player = players.get_active_players()
     time.sleep(1)
@@ -52,13 +53,7 @@ def header():
         writer.writerow(fieldnames)
     print("working")
 
-def opening():
-    file = open('test.csv', "w")
-    file.write("Hello World")
-    file.close()
-
 if __name__ == '__main__':
     print("Hello World!")
-    opening()
     header()
     writer()

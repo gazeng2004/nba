@@ -1,0 +1,51 @@
+from nba_api.stats.endpoints import playercareerstats, commonplayerinfo
+import csv
+
+index = {
+    "id" :  0,
+    "Age" : 1,
+    "GP" : 2,
+    "Min": 3,
+    "FGM": 4,
+    "FGA": 5,
+    "FG_PCT": 6,
+    "FG3M": 7,
+    "FG3A": 8,
+    "FG_PCT": 9,
+    "FTM" : 10,
+    "FTA" : 11,
+    "FT_PCT" : 12,
+    "OREB": 13,
+    "DREB": 14,
+    "REB": 15,
+    "AST": 16,
+    "STL": 17,
+    "BLK": 18,
+    "TOV": 19,
+    "PF": 20,
+    "PTS": 21
+}
+
+def reader(value : float, stat : str):
+    dict = {}
+    with open('2024-2025nbaStats.csv', mode = 'r') as file:
+        next(file)
+        csvFile = csv.reader(file)
+        for lines in csvFile:
+            dict[abs(float(lines[index[stat]]) - value)] = lines[0]
+
+    return dict[min(dict)]
+
+def id_reader(id):
+    player_info = commonplayerinfo.CommonPlayerInfo(player_id = id)
+    last_season = playercareerstats.PlayerCareerStats(player_id = id) 
+    pdf = player_info.get_data_frames()[0]
+    cdf = last_season.get_data_frames()[0].tail(1)
+    print(pdf)
+    print(cdf)
+
+if __name__ == '__main__':
+    home = input("Please input a integer")
+    word : str = input("Please input a string")
+    id : str = reader(float(home), word)
+    id_reader(id)
