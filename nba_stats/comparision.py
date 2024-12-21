@@ -26,13 +26,30 @@ index = {
     "PTS": 21
 }
 
-def reader(value : float, stat : str):
+def weight(input_stat: dict, player_stats : list):
+    weight : int = 0
+    for stat, value in input_stat.items():
+        weight += abs(float(player_stats[index[stat]]) - value)
+    return weight
+
+   
+def old_reader(value : float, stat : str):
     dict = {}
     with open('2024-2025nbaStats.csv', mode = 'r') as file:
         next(file)
         csvFile = csv.reader(file)
         for lines in csvFile:
             dict[abs(float(lines[index[stat]]) - value)] = lines[0]
+
+    return dict[min(dict)]
+
+def reader(input_dict : dict):
+    dict = {}
+    with open('2024-2025nbaStats.csv', mode = 'r') as file:
+        next(file)
+        csvFile = csv.reader(file)
+        for lines in csvFile:
+            dict[weight(input_dict, lines)] = lines[0]
 
     return dict[min(dict)]
 
@@ -44,8 +61,30 @@ def id_reader(id):
     print(pdf)
     print(cdf)
 
+def question_num():
+    try:
+        input_value = float(input("Please type a number: "))
+    except:
+        return question_num()
+    return input_value
+
+def question():
+    input_dict = {}
+    input_string = input("Please type a stat: ")
+    while input_string in index:
+        input_value = question_num()
+        input_dict[input_string] = input_value
+        input_string = input("Please type a stat: ")
+    return input_dict
+
 if __name__ == '__main__':
+    value = question()
+    print(value)
+    id : str = reader(value)
+    id_reader(id)
+    '''
     home = input("Please input a integer")
     word : str = input("Please input a string")
     id : str = reader(float(home), word)
     id_reader(id)
+    '''
