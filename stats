@@ -1,7 +1,8 @@
 from nba_api.stats.static import players
-from nba_api.stats.endpoints import playercareerstats 
+from nba_api.stats.endpoints import playercareerstats, commonplayerinfo
 import csv
 import time
+import pandas as pd
 """
 PlayerCareerStats can produce a dataframe that list out the average of the currents 
 GP: Game played
@@ -53,7 +54,42 @@ def header():
         writer.writerow(fieldnames)
     print("working")
 
-if __name__ == '__main__':
-    print("Hello World!")
-    header()
-    writer()
+def add_col(height : list):
+    cvs_file_path = '2024-2025nbaStats.csv'
+    df = pd.read_csv(cvs_file_path)
+    df['Weight'] = height
+    df.to_csv(cvs_file_path, index = False)
+    
+def print_values():
+    # Fetch active players (ensure `players` is properly defined elsewhere)
+    active_players = players.get_active_players()
+    time.sleep(1)
+    weights = []
+    
+    # Load the CSV file into a dictionary for quick lookup
+    player_data = {}
+    with open('2024-2025nbaStats.csv', mode='r') as csv_file:
+        reader = csv.DictReader(csv_file)
+        for row in reader:
+            player_data[row['ID']] = row
+    
+    for player in active_players:
+        player_info = commonplayerinfo.CommonPlayerInfo(player_id=player['id'])
+        career = player_info.get_data_frames()
+        person_id = career[0].at[0, 'PERSON_ID']
+        first_name = career[0].at[0, 'FIRST_NAME']
+        last_name = career[0].at[0, 'LAST_NAME']
+        weight = career[0].at[0, 'WEIGHT']
+        
+        print(person_id, first_name, last_name, weight)
+        
+        if str(person_id) in player_data:
+            weights.append(weight)
+        
+        # Optional: Reduce sleep time or batch API calls for efficiency
+        time.sleep(0.5)
+    
+    return weights
+
+if __name__ == '__main__': 
+    add_col(print_values())
