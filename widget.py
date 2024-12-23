@@ -1,75 +1,59 @@
-import tkinter
+import tkinter as tk
 
 
 # This is a font that we'll use on all of the buttons, so we'll define it
 # as a global constant.
-DEFAULT_FONT = ('Helvetica', 20)
+DEFAULT_FONT = ('Helvetica', 12)
+DEFAULT_FONT_SMALL = ('Helvetica', 8)
 
 
 class SimpleLayoutApplication:
     def __init__(self):
-        self._root_window = tkinter.Tk()
+        self._root = tk.Tk()
 
+        self.pts = tk.DoubleVar(value = 0.0)
+        self.reb = tk.DoubleVar(value = 0.0)
+        self.ast = tk.DoubleVar(value = 0.0)
+        self.blk = tk.DoubleVar(value = 0.0)
+        self.height = tk.IntVar(value = 0)
+        self.position = tk.StringVar(value = "")
+        self.weight = tk.IntVar(value = 0)
 
-        self._button1 = tkinter.Button(
-            master = self._root_window, text = 'Button 1', font = DEFAULT_FONT)
+        index: int = 0
+        self._stats: list[str] = ["PTS", "REB", "AST", "BLK", "Height(inches)","Weight(lbs)", "Position"]
+        for stat in self._stats:
+            stat_label = self._make_label(self._root, stat)
 
-        self._button1.grid(
-            row = 0, column = 0, padx = 10, pady = 10,
-            sticky = tkinter.W)
+            stat_label.grid(row = 0, column = index, padx = 0, pady = 0)
+            index += 1
 
+        index: int = 0
+        self._stats_vars: list[tk.Variable] = [self.pts, self.reb, self.ast, self.blk, self.height, self.weight]
+        for var in self._stats_vars:
+            entry = self._make_entry(self._root, var)
 
-        self._button2 = tkinter.Button(
-            master = self._root_window, text = 'Button 2', font = DEFAULT_FONT)
+            entry.grid(row = 1, column = index, padx = 0, pady = 0)
+            index += 1
+        
+        opition = [
+            "Guard",
+            "Forward-Guard",
+            "Forward",
+            "Center-Forward",
+            "Center"
+        ]
+        self.pos_entry = tk.OptionMenu(self._root, self.position, *opition)
+        self.pos_entry.grid(row = 1, column = index, padx = 0, pady = 0)
 
-        self._button2.grid(
-            row = 0, column = 1, padx = 10, pady = 10,
-            sticky = tkinter.E + tkinter.S)
+    def _make_label(self, root : tk, text : str):
+        return tk.Label(root, text = text, font = DEFAULT_FONT)
 
-
-        self._canvas = tkinter.Canvas(
-            master = self._root_window, background = '#600000')
-
-        self._canvas.grid(
-            row = 1, column = 0, columnspan = 2, padx = 10, pady = 10,
-            sticky = tkinter.N + tkinter.S + tkinter.E + tkinter.W)
-
-
-        # A Frame widget is one whose job is to contain other widgets.
-        # It can have its own layout, separate from the one that places
-        # it into its own master.  In this case, we use a Frame so that
-        # we can separately align a column of buttons along the right-hand
-        # edge of the window, regardless of the layout of the widgets
-        # to their left.
-        self._button_frame = tkinter.Frame(
-            master = self._root_window, background = '#006000')
-
-        self._button_frame.grid(
-            row = 0, column = 2, rowspan = 2, padx = 10, pady = 10,
-            sticky = tkinter.N + tkinter.S)
-
-        for button_number in range(1, 7):
-            numbered_button = tkinter.Button(
-                master = self._button_frame, text = '{}'.format(button_number),
-                font = DEFAULT_FONT)
-
-            numbered_button.grid(
-                row = button_number - 1, column = 0, padx = 0, pady = 0)
-
-
-        # This is how you set weights on rows and columns, which controls
-        # how the sizes of grid cells change as the size of the window
-        # changes -- and, correspondingly, how the size and positioning of
-        # the widgets in those grid cells change.
-        self._root_window.rowconfigure(0, weight = 1)
-        self._root_window.rowconfigure(1, weight = 3)
-        self._root_window.columnconfigure(0, weight = 1)
-        self._root_window.columnconfigure(1, weight = 1)
-        self._root_window.columnconfigure(2, weight = 0)
+    def _make_entry(self, root : tk, var : tk.Variable):
+        return tk.Entry(root, textvariable = var, font = DEFAULT_FONT_SMALL)
 
 
     def run(self):
-        self._root_window.mainloop()
+        self._root.mainloop()
 
 
 
