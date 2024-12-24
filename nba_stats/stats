@@ -20,8 +20,8 @@ FT_PCT: FTM / FTA
 
 """
 
-def writer():
-    active_player = players.get_active_players()
+def writer() -> None:
+    active_player: list[str] = players.get_active_players()
     time.sleep(1)
     for player in active_player:
         try:
@@ -47,20 +47,20 @@ def writer():
         #print(player_stats.career_totals_regular_season)
         time.sleep(1)
 
-def header():
+def header() ->None:
     with open('2024-2025nbaStats.csv', 'a', newline = '') as csvfile:
         fieldnames = ["ID", "AGE", "GP", "MIN", "FGM", "FGA", "FG_PCT", "FG3M", "FG3A", "FG_PCT", "FTM", "FTA", "FT_PCT", "OREB", "DREB", "REB", "AST", "STL", "BLK", "TOV", "PF", "PTS"]
         writer = csv.writer(csvfile)
         writer.writerow(fieldnames)
     print("working")
 
-def add_col(height : list):
+def add_col(height : list) -> None:
     cvs_file_path = '2024-2025nbaStats.csv'
     df = pd.read_csv(cvs_file_path)
     df['Weight'] = height
     df.to_csv(cvs_file_path, index = False)
     
-def print_values():
+def get_values() -> list[int]:
     # Fetch active players (ensure `players` is properly defined elsewhere)
     active_players = players.get_active_players()
     time.sleep(1)
@@ -91,5 +91,15 @@ def print_values():
     
     return weights
 
+def change_height() -> None:
+    df = pd.read_csv('2024-2025nbaStats.csv')
+
+    for i in range(1, len(df)):
+        height: str = df.loc[i, 'Height']
+        inches: int = (int(height[0]) * 12) + int(height[2:])
+        df.loc[i, 'Height'] = inches
+
+    df.to_csv('2024-2025nbaStats.csv', index = False)
+
 if __name__ == '__main__': 
-    add_col(print_values())
+    change_height()
