@@ -1,5 +1,4 @@
 from nba_api.stats.endpoints import playercareerstats, commonplayerinfo
-import csv
 
 # Nikola Jokić
 career = playercareerstats.PlayerCareerStats(player_id='1628415') 
@@ -14,7 +13,10 @@ pdf = player_info.get_data_frames()[0]
 last = cdf.tail(1)
 
 print(last)
-
+print(len(cdf))
+print(last.loc[len(cdf) - 1, "PLAYER_AGE"])
+print(pdf)
+print(pdf.loc[0, "FIRST_NAME"] + " " + pdf.loc[0, "LAST_NAME"])
 '''
 with open('tests.csv', 'w', newline = '') as csvfile:
         next : int = len(cdf) - 1
