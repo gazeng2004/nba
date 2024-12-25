@@ -1,6 +1,7 @@
 import tkinter as tk
 from nba_stats import comparision
-
+from nba_api.stats.endpoints import playercareerstats, commonplayerinfo
+import pandas as pd
 
 # This is a font that we'll use on all of the buttons, so we'll define it
 # as a global constant.
@@ -25,7 +26,7 @@ class SimpleLayoutApplication:
         self._label_maker()
         index = self._entry_maker()
         self._pos_entry_make(index)
-        self._button_maker_command("Input", 2, 3, self.info_getter())
+        self._button_maker_command("Input", 2, 3, self.info_getter)
         self._display = tk.Label(
             self._root, 
             height = 10, 
@@ -43,7 +44,7 @@ class SimpleLayoutApplication:
             master = self._root,
             text = text, 
             font = DEFAULT_FONT,
-            commander = command
+            command = command
         )
 
         button.grid(
@@ -72,14 +73,26 @@ class SimpleLayoutApplication:
             self.height.set(0)
         if self.check(self.position.get()):
             stat_list["Position"] = self.position.get()
-            self.pts.set("")
+            self.position.set("")
         if self.check(self.weight.get()):
             stat_list["Weight"] = self.weight.get()
-            self.pts.set(0)
+            self.weight.set(0)
         
         id = comparision.reader(stat_list)
-        print(id)
-        
+        output_str: str = self.display_stat(id)
+        self.display.set(output_str)
+    
+    def display_stat(self, id: str) -> str:
+        player_info = commonplayerinfo.CommonPlayerInfo(player_id = id)
+        last_season = playercareerstats.PlayerCareerStats(player_id = id)
+        pdf: pd.DataFrame = player_info.get_data_frames()[0]
+        cdf: pd.DataFrame = last_season.get_data_frames()[0]
+        tail = cdf.tail(1)
+
+        output_str: str = pdf.loc[0, "FIRST_NAME"] + " " + pdf.loc[0, "LAST_NAME"]
+        output_str += " " + str(tail.loc[len(cdf) - 1, "PLAYER_AGE"])
+        return output_str
+
     def check(self, stat):
         stat_set = {0.0, 0, ""}
         if stat in stat_set:
