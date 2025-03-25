@@ -1,5 +1,12 @@
 from nba_api.stats.endpoints import playercareerstats, commonplayerinfo
 import csv
+import math
+
+
+"""
+Bascially a 1NN machine Learning with learning with basic. 
+Nearest Neighbor of the closest player 
+"""
 
 """
 Want to incorporate height, weight, position into the nba stats 
@@ -38,18 +45,40 @@ index = {
 }
 
 def weight(input_stat: dict, player_stats : list) -> int:
+    """
+    Calculate the weight of the input stats with player_stats.
+    Use Euclidean distance to calculate weight score.
+
+    Parameters:
+        input_stats: the input stats from the box
+        player_stats: the individual player and its stats
+
+    Returns:
+        weight: weight score based on individual
+    """
     weight : int = 0
     for stat, value in input_stat.items():
 
         if(stat == 'Position'):
             pos: str = player_stats[index[stat]]
             if(pos != value):
-                weight += position_weight(pos, value)
+                weight += math.pow(position_weight(pos, value), 2)
         else:
-            weight += abs(float(player_stats[index[stat]]) - value)
-    return weight
+            weight += math.pow(abs(float(player_stats[index[stat]]) - value), 2)
+    return math.sqrt(weight)
 
-def position_weight(player_pos, input_pos) -> int:
+def position_weight(player_pos: str, input_pos: str) -> int:
+    """
+    Comparsion of player to input pos, but since it is a discrete ordinal value, this is see how far off position-wise
+    Future- convert postions into a numeric value
+
+    parameter: 
+        player_pos: player's position
+        input_pos: inputted player's position
+
+    return:
+        int: weight of the position
+    """
     player_list: list[str] = position_sep(player_pos)
     input_list: list[str] = position_sep(input_pos)
     
@@ -64,6 +93,15 @@ def position_weight(player_pos, input_pos) -> int:
 
 
 def position_sep(pos) -> list[str]:
+    """
+    Return a list that separate the postion / hyprid
+
+    Args:
+        pos: postion
+
+    Return:
+        list of positions
+    """
     if(len(pos) <= 7):
         return [pos]
     elif(pos[6] == '-'):
@@ -71,7 +109,18 @@ def position_sep(pos) -> list[str]:
     elif(pos[5] == '-'):
         return ["Center", "Forward"]
 
-def old_reader(value : float, stat : str):
+def old_reader(value : float, stat : str) -> str:
+    """
+    For each player in csvfile, we would subtract its value from its stats and get a value.
+    Afterward, the program would return the minimum value for that stats
+
+    Args:
+        value: the input value
+        stat: input stat
+    
+    Return:
+        dict[min(dict)]: a str of the player
+    """
     dict = {}
     with open('2024-2025nbaStats.csv', mode = 'r') as file:
         next(file)
@@ -81,7 +130,18 @@ def old_reader(value : float, stat : str):
 
     return dict[min(dict)]
 
-def reader(input_dict : dict):
+def reader(input_dict : dict) -> dict:
+    """
+    For each player in csvfile, we would subtract its value from its stats and get a value.
+    Afterward, the program would return the minimum value for each stat
+
+    Args:
+        value: the input value
+        stat: input stat
+    
+    Return:
+        dict[min(dict)]: a str of the player
+    """
     dict = {}
     with open('2024-2025nbaStats.csv', mode = 'r') as file:
         next(file)
@@ -92,6 +152,12 @@ def reader(input_dict : dict):
     return dict[min(dict)]
 
 def id_reader(id: str) -> None:
+    """
+    Display stats of a player
+
+    Args:
+        id: id of the player
+    """
     player_info = commonplayerinfo.CommonPlayerInfo(player_id = id)
     last_season = playercareerstats.PlayerCareerStats(player_id = id) 
     pdf = player_info.get_data_frames()[0]
@@ -100,6 +166,9 @@ def id_reader(id: str) -> None:
     print(cdf)
 
 def question_num() -> int:
+    """
+    Ask user to input a number for a stat
+    """
     try:
         input_value = float(input("Please type a number: "))
     except:
@@ -107,10 +176,19 @@ def question_num() -> int:
     return input_value
 
 def question_str(string: str) -> str:
+    """
+    Ask user to input a str for position
+    """
     input_value = str(input("Please type a string: "))
     return input_value
 
 def question() -> dict:
+    """
+    A loop, asking user to input stats that would match up with a user. 
+
+    return:
+        input_dict: dict of all stats inputted by the user. 
+    """
     input_dict = {}
     input_string = input("Please type a stat: ")
     while input_string in index:
