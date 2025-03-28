@@ -1,5 +1,6 @@
 from nba_api.stats.endpoints import playercareerstats, commonplayerinfo
 import csv
+import pandas as pd
 import math
 
 index = {
@@ -35,17 +36,13 @@ class NbaNN:
     file = '2024-2025nbaStats.csv'
     """
     def __init__(self, file):
-        self.lines = self.__reader(file)
+        self.lines = pd.read_csv(file)
 
-    def __reader(self, filename):
-        with open(filename, mode = 'r') as file:
-            csvFile = csv.reader(file)
-            next(csvFile)
-            data = list(csvFile)
-        return data
+    def weight(self, input_stats):
+        pass
 
     def printer(self):
-        print(self.lines)
+        print(self.lines["Position"].unique())
     
 if __name__ == "__main__":
     one = NbaNN('2024-2025nbaStats.csv')
